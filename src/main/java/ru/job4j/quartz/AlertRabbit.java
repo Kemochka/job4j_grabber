@@ -2,7 +2,6 @@ package ru.job4j.quartz;
 
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
-
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -48,7 +47,7 @@ public class AlertRabbit {
         try {
             List<Long> store = new ArrayList<>();
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-            scheduler.start();//старт
+            scheduler.start();
             JobDataMap data = new JobDataMap();
             data.put("store", store);
             data.put("connection", connection);
