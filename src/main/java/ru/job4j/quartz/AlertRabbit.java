@@ -17,10 +17,8 @@ import static org.quartz.SimpleScheduleBuilder.*;
 
 public class AlertRabbit {
     private Connection connection;
-    private final Properties properties;
 
-    public AlertRabbit(Properties properties) {
-        this.properties = properties;
+    public AlertRabbit() {
         init();
     }
 
@@ -49,22 +47,21 @@ public class AlertRabbit {
     public void  runScheduler() {
         try {
             List<Long> store = new ArrayList<>();
-            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();//задачи, которые хотим выполнять периодически
+            Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();//старт
             JobDataMap data = new JobDataMap();
             data.put("store", store);
             data.put("connection", connection);
-            JobDetail job = newJob(Rabbit.class)//создается объект(создание задачи для выполнения)
+            JobDetail job = newJob(Rabbit.class)
                     .usingJobData(data)
                     .build();
-            SimpleScheduleBuilder times = simpleSchedule()//создание расписания для выполнения задачи
+            SimpleScheduleBuilder times = simpleSchedule()
                     .withIntervalInSeconds(5)
                     .repeatForever();
-            Trigger trigger = newTrigger()//запуск через триггер, в этом случае запуск сразу
-                    .startNow()
+            Trigger trigger = newTrigger()
                     .withSchedule(times)
                     .build();
-            scheduler.scheduleJob(job, trigger);//вызов выполнения задачи
+            scheduler.scheduleJob(job, trigger);
             Thread.sleep(10000);
             scheduler.shutdown();
             System.out.println(store);
@@ -74,8 +71,7 @@ public class AlertRabbit {
     }
 
     public static void main(String[] args) {
-        Properties pr = getProperty();
-        AlertRabbit alertRabbit = new AlertRabbit(pr);
+        AlertRabbit alertRabbit = new AlertRabbit();
         alertRabbit.runScheduler();
     }
 
