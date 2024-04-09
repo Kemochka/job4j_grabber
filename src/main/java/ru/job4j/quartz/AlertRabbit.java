@@ -43,7 +43,6 @@ public class AlertRabbit {
                 scheduler.scheduleJob(job, trigger);
                 Thread.sleep(10000);
                 scheduler.shutdown();
-                connection.close();
                 System.out.println(store);
             } catch (Exception se) {
                 se.printStackTrace();
