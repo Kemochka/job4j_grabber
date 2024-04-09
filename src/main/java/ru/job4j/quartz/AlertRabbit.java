@@ -15,36 +15,14 @@ import static org.quartz.TriggerBuilder.*;
 import static org.quartz.SimpleScheduleBuilder.*;
 
 public class AlertRabbit {
-    private Connection connection;
-
-    public AlertRabbit() {
-        init();
-    }
-
-    private static Properties getProperty() {
-        Properties properties = new Properties();
+    public static void main(String[] args) {
         try (InputStream inputStream = AlertRabbit.class.getClassLoader().getResourceAsStream("rabbit.properties")) {
-            properties.load(inputStream);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return properties;
-    }
-
-    private void init() {
-        Properties config = getProperty();
-        try {
+            Properties config = new Properties();
+            config.load(inputStream);
             String url = config.getProperty("url");
             String username = config.getProperty("username");
             String password = config.getProperty("password");
-            connection = DriverManager.getConnection(url, username, password);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void  runScheduler() {
-        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
             List<Long> store = new ArrayList<>();
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
@@ -63,15 +41,11 @@ public class AlertRabbit {
             scheduler.scheduleJob(job, trigger);
             Thread.sleep(10000);
             scheduler.shutdown();
+            connection.close();
             System.out.println(store);
         } catch (Exception se) {
             se.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        AlertRabbit alertRabbit = new AlertRabbit();
-        alertRabbit.runScheduler();
     }
 
     public static class Rabbit implements Job {
@@ -90,7 +64,7 @@ public class AlertRabbit {
                 String sql = "INSERT INTO rabbit (created_date) VALUES (TO_TIMESTAMP(?))";
                 try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                     preparedStatement.setLong(1, System.currentTimeMillis());
-                    preparedStatement.execute();
+                    preparedStatement.executeUpdate();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
