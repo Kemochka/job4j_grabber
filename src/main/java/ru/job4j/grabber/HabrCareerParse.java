@@ -12,6 +12,7 @@ public class HabrCareerParse {
     public static final String PREFIX = "/vacancies?page=";
     public static final String SUFFIX = "&q=Java%20developer&type=all";
     public static final int NUM_PAGES = 5;
+    public static String description;
 
     public static void main(String[] args) throws IOException {
         for (int i = 1; i <= NUM_PAGES; i++) {
@@ -27,8 +28,24 @@ public class HabrCareerParse {
                 Element date = vacancyDate.child(0);
                 String vacDate = date.attr("datetime");
                 String link = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
-                System.out.printf("%s %s %s%n", vacancyName, vacDate, link);
+                String descriptions;
+                try {
+                    descriptions = retrieveDescription(link);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                System.out.printf("%s %s %s%n %s%n", vacancyName, vacDate, link, descriptions);
             });
         }
+    }
+    private static String retrieveDescription(String link) throws IOException {
+     Connection connection = Jsoup.connect(link);
+     Document document = connection.get();
+     Elements rows = document.select(".faded-content__container");
+     rows.forEach(row -> {
+                 Element titleElement = row.select(".faded-content").first();
+                 description = titleElement.text();
+             });
+     return description;
     }
 }
