@@ -28,13 +28,12 @@ public class Post {
         }
         Post post = (Post) o;
         return id == post.id
-                && Objects.equals(link, post.link)
-                && Objects.equals(description, post.description);
+                && Objects.equals(link, post.link);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, link, description);
+        return Objects.hash(id, link);
     }
 
     @Override
