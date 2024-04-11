@@ -27,14 +27,14 @@ public class Post {
             return false;
         }
         Post post = (Post) o;
-        return id == post.id && Objects.equals(title, post.title)
+        return id == post.id
                 && Objects.equals(link, post.link)
                 && Objects.equals(description, post.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, link, description);
+        return Objects.hash(id, link, description);
     }
 
     @Override
